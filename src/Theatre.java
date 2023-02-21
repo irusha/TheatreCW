@@ -5,6 +5,9 @@ public class Theatre {
     static int[] row2;
     static int[] row3;
 
+    static boolean BOOKING_MODE = true;
+    static boolean CANCELLING_MODE = false;
+
     public static void main(String[] args) {
         System.out.println("Welcome to the New Theatre");
         row1 = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -38,6 +41,9 @@ public class Theatre {
                 case 2:
                     print_seating_area();
                     break;
+                case 3:
+                    cancel_ticket();
+                    break;
                 default:
                     System.out.println("Invalid option. Please try again.");
             }
@@ -53,7 +59,7 @@ public class Theatre {
 
         System.out.print("    ");
         for (int i = 0; i < row1.length; i++) {
-            if (i == row1.length/2) {
+            if (i == row1.length / 2) {
                 System.out.print(" ");
             }
             printSeat(row1[i]);
@@ -61,14 +67,14 @@ public class Theatre {
         System.out.println();
         System.out.print("  ");
         for (int i = 0; i < row2.length; i++) {
-            if (i == row2.length/2) {
+            if (i == row2.length / 2) {
                 System.out.print(" ");
             }
             printSeat(row2[i]);
         }
         System.out.println();
         for (int i = 0; i < row3.length; i++) {
-            if (i == row3.length/2) {
+            if (i == row3.length / 2) {
                 System.out.print(" ");
             }
             printSeat(row3[i]);
@@ -109,7 +115,28 @@ public class Theatre {
 
     static void cancel_ticket() {
         int seatRow = getSeatRow();
-        int seat = getSeat(seatRow, false);
+        int seat = getSeat(seatRow, CANCELLING_MODE);
+        int[] rowArray;
+        if (seat != -1) {
+            switch (seatRow) {
+                case 1:
+                    rowArray = row1;
+                    break;
+                case 2:
+                    rowArray = row2;
+                    break;
+                case 3:
+                    rowArray = row3;
+                    break;
+                default:
+                    rowArray = new int[0];
+                    break;
+            }
+            rowArray[seat - 1] = 0;
+            System.out.printf("Cancelled ticket %s from row %s\n", seat, seatRow);
+        }
+
+
     }
 
     static int getPositiveInt(String message, boolean includesZero) {
@@ -161,7 +188,7 @@ public class Theatre {
 
     }
 
-    static int getSeat(int selectedSeatRow, boolean checkAlreadyBooked) {
+    static int getSeat(int selectedSeatRow, boolean mode) {
 
         while (true) {
             int tempSeat = getPositiveInt("Please Enter the seat", "Please enter a positive integer");
@@ -171,13 +198,19 @@ public class Theatre {
                     if (tempSeat > 12) {
                         System.out.println("Enter a seat number between 1 - 12");
                     } else {
-                        if (checkAlreadyBooked){
-
-                        }
-                        if (row1[tempSeat - 1] == 0) {
-                            return tempSeat;
+                        if (mode) {
+                            if (row1[tempSeat - 1] == 0) {
+                                return tempSeat;
+                            } else {
+                                System.out.println("Seat is already booked");
+                            }
                         } else {
-                            System.out.println("Seat already booked");
+                            if (row1[tempSeat - 1] == 0) {
+                                System.out.println("Seat isn't booked right now");
+                                return -1;
+                            } else {
+                                return tempSeat;
+                            }
                         }
                     }
                     break;
@@ -185,10 +218,19 @@ public class Theatre {
                     if (tempSeat > 16) {
                         System.out.println("Enter a seat number between 1 - 16");
                     } else {
-                        if (row2[tempSeat - 1] == 0) {
-                            return tempSeat;
+                        if (mode) {
+                            if (row2[tempSeat - 1] == 0) {
+                                return tempSeat;
+                            } else {
+                                System.out.println("Seat is already booked");
+                            }
                         } else {
-                            System.out.println("Seat already booked");
+                            if (row2[tempSeat - 1] == 0) {
+                                System.out.println("Seat isn't booked right now");
+                                return -1;
+                            } else {
+                                return tempSeat;
+                            }
                         }
                     }
                     break;
@@ -196,21 +238,47 @@ public class Theatre {
                     if (tempSeat > 20) {
                         System.out.println("Enter a seat number between 1 - 20");
                     } else {
-                        if (row3[tempSeat - 1] == 0) {
-                            return tempSeat;
+                        if (mode) {
+                            if (row3[tempSeat - 1] == 0) {
+                                return tempSeat;
+                            } else {
+                                System.out.println("Seat is already booked");
+                            }
                         } else {
-                            System.out.println("Seat already booked");
+                            if (row3[tempSeat - 1] == 0) {
+                                System.out.println("Seat isn't booked right now");
+                                return -1;
+                            } else {
+                                return tempSeat;
+                            }
                         }
                     }
                     break;
             }
         }
     }
+
     static void buy_ticket() {
         int selectedSeatRow = getSeatRow();
-        int selectedSeat = getSeat(selectedSeatRow, false);
+        int selectedSeat = getSeat(selectedSeatRow, BOOKING_MODE);
 
         System.out.printf("Booked seat %s from row 1\n", selectedSeat);
-        row1[selectedSeat - 1] = 1;
+
+        int[] rowArray;
+        switch (selectedSeatRow) {
+            case 1:
+                rowArray = row1;
+                break;
+            case 2:
+                rowArray = row2;
+                break;
+            case 3:
+                rowArray = row3;
+                break;
+            default:
+                rowArray = new int[0];
+                break;
+        }
+        rowArray[selectedSeat - 1] = 1;
     }
 }
