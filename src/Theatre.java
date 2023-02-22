@@ -113,6 +113,10 @@ public class Theatre {
         while (true);
     }
 
+    static void available_seats() {
+
+    }
+
     static void cancel_ticket() {
         int seatRow = getSeatRow();
         int seat = getSeat(seatRow, CANCELLING_MODE);
