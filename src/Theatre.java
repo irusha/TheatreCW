@@ -1,3 +1,5 @@
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Theatre {
@@ -43,6 +45,9 @@ public class Theatre {
                     break;
                 case 3:
                     cancel_ticket();
+                    break;
+                case 4:
+                    available_seats();
                     break;
                 default:
                     System.out.println("Invalid option. Please try again.");
@@ -114,7 +119,55 @@ public class Theatre {
     }
 
     static void available_seats() {
+        System.out.print("Seats available in row 1: ");
 
+        ArrayList<Integer> tempArray = new ArrayList<>();
+        for (int i = 0; i < row1.length; i++) {
+            if (row1[i] == 0) {
+                tempArray.add(i + 1);
+            }
+        }
+        System.out.println(arrayToString(tempArray) + ".");
+
+        tempArray = new ArrayList<>();
+        System.out.print("Seats available in row 2: ");
+        for (int i = 0; i < row2.length; i++) {
+            if (row2[i] == 0) {
+                tempArray.add(i + 1);
+            }
+        }
+        System.out.println(arrayToString(tempArray) + ".");
+
+        tempArray = new ArrayList<>();
+        System.out.print("Seats available in row 3: ");
+        for (int i = 0; i < row3.length; i++) {
+            if (row3[i] == 0) {
+                tempArray.add(i + 1);
+            }
+        }
+        System.out.println(arrayToString(tempArray) + ".");
+    }
+
+    static String arrayToString(ArrayList<Integer> list) {
+        StringBuilder retStr = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+            retStr.append(list.get(i));
+            if (i != list.size() - 1) {
+                retStr.append(", ");
+            }
+        }
+        return retStr.toString();
+    }
+
+    static String arrayToString(int[] list) {
+        StringBuilder retStr = new StringBuilder();
+        for (int i = 0; i < list.length; i++) {
+            retStr.append(list[i]);
+            if (i != list.length - 1) {
+                retStr.append(", ");
+            }
+        }
+        return retStr.toString();
     }
 
     static void cancel_ticket() {
@@ -140,6 +193,20 @@ public class Theatre {
             System.out.printf("Cancelled ticket %s from row %s\n", seat, seatRow);
         }
 
+
+    }
+
+    static void save() {
+        File file = new File("data");
+        try{
+            OutputStream fileW = new FileOutputStream(file);
+            fileW.write("".getBytes());
+        }
+        catch (FileNotFoundException e) {
+            System.out.println("Created file isn't available.");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
@@ -206,7 +273,7 @@ public class Theatre {
                             if (row1[tempSeat - 1] == 0) {
                                 return tempSeat;
                             } else {
-                                System.out.println("Seat is already booked");
+                                System.out.println("Seat already booked");
                             }
                         } else {
                             if (row1[tempSeat - 1] == 0) {
@@ -226,7 +293,7 @@ public class Theatre {
                             if (row2[tempSeat - 1] == 0) {
                                 return tempSeat;
                             } else {
-                                System.out.println("Seat is already booked");
+                                System.out.println("Seat already booked");
                             }
                         } else {
                             if (row2[tempSeat - 1] == 0) {
@@ -246,7 +313,7 @@ public class Theatre {
                             if (row3[tempSeat - 1] == 0) {
                                 return tempSeat;
                             } else {
-                                System.out.println("Seat is already booked");
+                                System.out.println("Seat already booked");
                             }
                         } else {
                             if (row3[tempSeat - 1] == 0) {
