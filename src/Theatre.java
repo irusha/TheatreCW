@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Theatre {
@@ -48,6 +49,12 @@ public class Theatre {
                     break;
                 case 4:
                     available_seats();
+                    break;
+                case 5:
+                    save();
+                    break;
+                case 6:
+                    load();
                     break;
                 default:
                     System.out.println("Invalid option. Please try again.");
@@ -197,14 +204,94 @@ public class Theatre {
     }
 
     static void save() {
-        File file = new File("data");
-        try{
-            OutputStream fileW = new FileOutputStream(file);
-            fileW.write("".getBytes());
-        }
-        catch (FileNotFoundException e) {
-            System.out.println("Created file isn't available.");
+        File file = new File("src\\data.txt");
+
+        try {
+            if (file.createNewFile()) {
+                System.out.println("File created");
+            }
+
+            else {
+                System.out.println("File overwritten");
+            }
         } catch (IOException e) {
+            System.out.println("Unable to create a file");
+        }
+
+        try{
+            FileWriter writer = new FileWriter(file);
+            writer.write(String.format("Row 1 - %s\n", arrayToString(row1)));
+            writer.write(String.format("Row 2 - %s\n", arrayToString(row2)));
+            writer.write(String.format("Row 3 - %s\n", arrayToString(row3)));
+            writer.close();
+            System.out.println("Successfully wrote data to the file");
+
+        }
+        catch (IOException e) {
+            System.out.println("Created file isn't available.");
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    static int[] strArrayToIntArray(String[] array) {
+        int[] tempArray = new int[array.length];
+        for (int i = 0; i < array.length; i++) {
+            tempArray[i] = Integer.parseInt(array[i]);
+        }
+        return tempArray;
+    }
+
+    static boolean rowLengthCheck(int[] array,  int row) {
+        switch (row) {
+            case 1:
+                return array.length == 12;
+            case 2:
+                return array.length == 16;
+            case 3:
+                return array.length == 20;
+            default:
+                return false;
+        }
+    }
+    static void load() {
+        File arrayFile = new File("src/data.txt");
+
+        try {
+            Scanner reader = new Scanner(arrayFile);
+
+            String row1DataStr = reader.nextLine().split(" - ")[1];
+            int[] rowTemp = strArrayToIntArray(row1DataStr.split(", "));
+
+            if (rowLengthCheck(rowTemp, 1)) {
+                row1 = rowTemp;
+            }
+            else {
+                throw new FileNotFoundException("Invalid File");
+            }
+
+            String row2DataStr = reader.nextLine().split(" - ")[1];
+            rowTemp = strArrayToIntArray(row2DataStr.split(", "));
+
+            if (rowLengthCheck(rowTemp, 2)) {
+                row2 = rowTemp;
+            }
+            else {
+                throw new FileNotFoundException("Invalid File");
+            }
+
+            String row3DataStr = reader.nextLine().split(" - ")[1];
+            rowTemp = strArrayToIntArray(row3DataStr.split(", "));
+
+            if (rowLengthCheck(rowTemp, 3)) {
+                row3 = rowTemp;
+            }
+            else {
+                throw new FileNotFoundException("Invalid File");
+            }
+            System.out.println("Successfully loaded the file");
+            reader.close();
+        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
 
