@@ -1,6 +1,5 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Theatre {
@@ -292,7 +291,7 @@ public class Theatre {
             System.out.println("Successfully loaded the file");
             reader.close();
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            System.out.println("Invalid file. Failed to load.");
         }
 
     }
