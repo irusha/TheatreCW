@@ -7,6 +7,8 @@ public class Theatre {
     static int[] row2;
     static int[] row3;
 
+    static ArrayList<Ticket> tickets = new ArrayList<>();
+
     static boolean BOOKING_MODE = true;
     static boolean CANCELLING_MODE = false;
 
@@ -196,10 +198,20 @@ public class Theatre {
                     break;
             }
             rowArray[seat - 1] = 0;
+            tickets.remove(getTicketIndex(seatRow, seat, tickets));
             System.out.printf("Cancelled ticket %s from row %s\n", seat, seatRow);
+            //System.out.println(tickets.size());
+        }
+    }
+
+    static int getTicketIndex(int row, int seat, ArrayList<Ticket> ticketArray) {
+        for (int i = 0; i < ticketArray.size(); i++) {
+            if (ticketArray.get(i).row == row && ticketArray.get(i).seat == seat) {
+                return i;
+            }
         }
 
-
+        return -1;
     }
 
     static void save() {
@@ -419,7 +431,15 @@ public class Theatre {
         int selectedSeatRow = getSeatRow();
         int selectedSeat = getSeat(selectedSeatRow, BOOKING_MODE);
 
-        System.out.printf("Booked seat %s from row 1\n", selectedSeat);
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Please enter the name of the person");
+        String personName = sc.nextLine();
+        System.out.println("Please enter the surname of the person");
+        String surname = sc.nextLine();
+        System.out.println("Please enter the email of the person");
+        String email = sc.nextLine();
+
+        Person person = new Person(personName, surname, email);
 
         int[] rowArray;
         switch (selectedSeatRow) {
@@ -436,6 +456,14 @@ public class Theatre {
                 rowArray = new int[0];
                 break;
         }
+
+        int price = getPositiveInt("Please enter the price of the ticket", "Invalid amount");
+
+        Ticket ticket = new Ticket(selectedSeatRow, selectedSeat, price, person);
+
+        tickets.add(ticket);
+
         rowArray[selectedSeat - 1] = 1;
+        System.out.printf("Booked seat %s from row 1\n", selectedSeat);
     }
 }
