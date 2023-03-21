@@ -1,7 +1,5 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class Theatre {
@@ -19,7 +17,6 @@ public class Theatre {
         row2 = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         row3 = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-
         boolean flag = true;
         while (flag) {
             System.out.println("""
@@ -33,10 +30,10 @@ public class Theatre {
                     6) Load from file\s
                     7) Print ticket information and total price\s
                     8) Sort tickets by price\s
-                     0) Quit\s
+                        0) Quit\s
                     -------------------------------------------------
                     """);
-            switch (getPositiveInt("Enter option:", true)) {
+            switch (getPositiveInt("Enter option:", "Invalid option. Please try again", true)) {
                 case 1 -> buy_ticket();
                 case 0 -> flag = false;
                 case 2 -> print_seating_area();
@@ -98,9 +95,10 @@ public class Theatre {
     /**
      * @param message the message that is asked from the user to enter an int
      * @param tryAgainMessage the message that is shown to the user when they enter a wrong input
+     * @param isIncludingZero 0 is a valid input if this is true. Otherwise, it is not
      * @return the int input by the user
      */
-    static int getPositiveInt(String message, String tryAgainMessage) {
+    static int getPositiveInt(String message, String tryAgainMessage, boolean isIncludingZero) {
         System.out.println(message);
         Scanner sc = new Scanner(System.in);
 
@@ -110,11 +108,22 @@ public class Theatre {
             strInt = sc.nextLine();
             try {
                 int parsedInt = Integer.parseInt(strInt);
-                if (parsedInt > 0) {
-                    return parsedInt;
-                } else {
-                    System.out.println(tryAgainMessage);
+                if (isIncludingZero) {
+                    if (parsedInt >= 0) {
+                        return parsedInt;
+                    } else {
+                        System.out.println(tryAgainMessage);
+                    }
                 }
+
+                else {
+                    if (parsedInt > 0) {
+                        return parsedInt;
+                    } else {
+                        System.out.println(tryAgainMessage);
+                    }
+                }
+
             } catch (Exception e) {
                 System.out.println(tryAgainMessage);
             }
@@ -151,34 +160,28 @@ public class Theatre {
         while (true);
     }
 
+    /**
+     * Creates a list of available seats in a given row
+     * @param rowArray takes the row data
+     * @return the ArrayList of availavle seats
+     */
+    static ArrayList<Integer> availableSeatsArrayCreator(int[] rowArray) {
+        ArrayList<Integer> tempArray = new ArrayList<>();
+        for (int i = 0; i < rowArray.length; i++) {
+            if (rowArray[i] == 0) {
+                tempArray.add(i + 1);
+            }
+        }
+        return tempArray;
+    }
+
     static void available_seats() {
         System.out.print("Seats available in row 1: ");
-
-        ArrayList<Integer> tempArray = new ArrayList<>();
-        for (int i = 0; i < row1.length; i++) {
-            if (row1[i] == 0) {
-                tempArray.add(i + 1);
-            }
-        }
-        System.out.println(arrayToString(tempArray) + ".");
-
-        tempArray = new ArrayList<>();
+        System.out.println(arrayToString(availableSeatsArrayCreator(row1)) + ".");
         System.out.print("Seats available in row 2: ");
-        for (int i = 0; i < row2.length; i++) {
-            if (row2[i] == 0) {
-                tempArray.add(i + 1);
-            }
-        }
-        System.out.println(arrayToString(tempArray) + ".");
-
-        tempArray = new ArrayList<>();
+        System.out.println(arrayToString(availableSeatsArrayCreator(row2)) + ".");
         System.out.print("Seats available in row 3: ");
-        for (int i = 0; i < row3.length; i++) {
-            if (row3[i] == 0) {
-                tempArray.add(i + 1);
-            }
-        }
-        System.out.println(arrayToString(tempArray) + ".");
+        System.out.println(arrayToString(availableSeatsArrayCreator(row3)) + ".");
     }
 
     /**
@@ -231,28 +234,12 @@ public class Theatre {
                 tickets.remove(ticketIndex);
             }
             System.out.printf("Cancelled ticket %s from row %s\n", seat, seatRow);
-            //System.out.println(tickets.size());
         }
     }
-
-    /*static void sort_tickets() {
-        for (int i = 0; i < tickets.size(); i++) {
-            for (int j = i + 1; j < tickets.size(); j++) {
-                if (tickets.get(i).getPrice() > tickets.get(j).getPrice()) {
-                    Ticket tempTicket = tickets.get(i);
-                    tickets.set(i, tickets.get(j));
-                    tickets.set(j, tempTicket);
-                }
-            }
-        }
-        show_tickets_info();
-    }*/
 
     static void sort_tickets() {
         ArrayList<Ticket> tempArray = new ArrayList<>();
         ArrayList<Ticket> copiedArray = new ArrayList<>(tickets);
-//        Ticket currentSmallest = copiedArray.get(0);
-
         while (copiedArray.size() != 0) {
             int smallestNumberIndex = 0;
             for (int i = 0; i < copiedArray.size(); i++) {
@@ -310,11 +297,7 @@ public class Theatre {
     static boolean emailFormatCheck(String email) {
         if (email.contains("@")) {
             try {
-                if (email.split("@")[1].split("\\.").length == 2) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return email.split("@")[1].split("\\.").length == 2;
             } catch (ArrayIndexOutOfBoundsException e) {
                 return false;
             }
@@ -419,52 +402,13 @@ public class Theatre {
 
     }
 
-    /**
-     * Gets a positive integer from the user
-     * @param message shows a message before getting the input
-     * @param includesZero true: user can input numbers from 0, false: user can only input numbers from 1
-     * @return the valid number inputted by the user
-     */
-    static int getPositiveInt(String message, boolean includesZero) {
-        Scanner sc = new Scanner(System.in);
-
-        String strInt;
-
-        do {
-            System.out.println(message);
-            strInt = sc.nextLine();
-            try {
-                int parsedInt = Integer.parseInt(strInt);
-                if (includesZero) {
-                    if (parsedInt >= 0) {
-                        return parsedInt;
-                    } else {
-                        System.out.println();
-                    }
-                } else {
-                    if (parsedInt > 0) {
-                        return parsedInt;
-                    } else {
-                        System.out.println();
-                    }
-                }
-            } catch (Exception e) {
-                System.out.println();
-            }
-        }
-
-        while (true);
-    }
-
     static void show_tickets_info() {
         float i = 0;
-
         for (Ticket ticket : tickets) {
             ticket.print();
             System.out.println();
             i += ticket.getPrice();
         }
-
         System.out.println("Total value of the tickets: " + i);
     }
 
@@ -473,9 +417,8 @@ public class Theatre {
      * @return the seat row
      */
     static int getSeatRow() {
-
         while (true) {
-            int tempSeat = getPositiveInt("Please Enter the seat row", "Please enter a positive integer");
+            int tempSeat = getPositiveInt("Please Enter the seat row", "Please enter a positive integer", false);
 
             switch (tempSeat) {
                 case 1, 2, 3 -> {
@@ -484,7 +427,36 @@ public class Theatre {
                 default -> System.out.println("Invalid seat row. Please try again.");
             }
         }
+    }
 
+    /**
+     * Check whether a seat is available to book or cancel
+     * @param row the row that the function check the sear is valid and available
+     * @param seat the seat the user want to book
+     * @param mode function is in booking mode if it is true and cancelling modéif it is false
+     * @return the seat prefered by the user
+     */
+    static int seatAvailabilityChecker(int[] row, int seat, boolean mode) {
+        int maxSeats = row.length;
+        if (seat > maxSeats) {
+            System.out.println("Enter a seat number between 1 - " + maxSeats);
+        } else {
+            if (mode) {
+                if (row[seat - 1] == 0) {
+                    return seat;
+                } else {
+                    System.out.println("Seat already booked");
+                }
+            } else {
+                if (row[seat - 1] == 0) {
+                    System.out.println("Seat isn't booked right now");
+                    return -1;
+                } else {
+                    return seat;
+                }
+            }
+        }
+        return -1;
     }
 
     /**
@@ -495,73 +467,19 @@ public class Theatre {
      * @return the seat number
      */
     static int getSeat(int selectedSeatRow, boolean mode) {
+        int seatNumber = -1;
 
-        while (true) {
-            int tempSeat = getPositiveInt("Please Enter the seat", "Please enter a positive integer");
+        while (seatNumber == -1) {
+            int tempSeat = getPositiveInt("Please enter a seat", "Please enter a positive integer", false);
 
             switch (selectedSeatRow) {
-                case 1 -> {
-                    if (tempSeat > 12) {
-                        System.out.println("Enter a seat number between 1 - 12");
-                    } else {
-                        if (mode) {
-                            if (row1[tempSeat - 1] == 0) {
-                                return tempSeat;
-                            } else {
-                                System.out.println("Seat already booked");
-                            }
-                        } else {
-                            if (row1[tempSeat - 1] == 0) {
-                                System.out.println("Seat isn't booked right now");
-                                return -1;
-                            } else {
-                                return tempSeat;
-                            }
-                        }
-                    }
-                }
-                case 2 -> {
-                    if (tempSeat > 16) {
-                        System.out.println("Enter a seat number between 1 - 16");
-                    } else {
-                        if (mode) {
-                            if (row2[tempSeat - 1] == 0) {
-                                return tempSeat;
-                            } else {
-                                System.out.println("Seat already booked");
-                            }
-                        } else {
-                            if (row2[tempSeat - 1] == 0) {
-                                System.out.println("Seat isn't booked right now");
-                                return -1;
-                            } else {
-                                return tempSeat;
-                            }
-                        }
-                    }
-                }
-                case 3 -> {
-                    if (tempSeat > 20) {
-                        System.out.println("Enter a seat number between 1 - 20");
-                    } else {
-                        if (mode) {
-                            if (row3[tempSeat - 1] == 0) {
-                                return tempSeat;
-                            } else {
-                                System.out.println("Seat already booked");
-                            }
-                        } else {
-                            if (row3[tempSeat - 1] == 0) {
-                                System.out.println("Seat isn't booked right now");
-                                return -1;
-                            } else {
-                                return tempSeat;
-                            }
-                        }
-                    }
-                }
+                case 1 -> seatNumber = seatAvailabilityChecker(row1, tempSeat, mode);
+                case 2 -> seatNumber = seatAvailabilityChecker(row2, tempSeat, mode);
+                case 3 -> seatNumber = seatAvailabilityChecker(row3, tempSeat, mode);
             }
         }
+
+        return seatNumber;
     }
 
     /**
