@@ -1,5 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Theatre {
@@ -8,8 +10,8 @@ public class Theatre {
     static int[] row3;
 
     static ArrayList<Ticket> tickets = new ArrayList<>();
-    static boolean BOOKING_MODE = true;
-    static boolean CANCELLING_MODE = false;
+    final static boolean BOOKING_MODE = true;
+    final static boolean CANCELLING_MODE = false;
 
     public static void main(String[] args) {
         System.out.println("Welcome to the New Theatre");
@@ -81,6 +83,10 @@ public class Theatre {
         System.out.println();
     }
 
+    /**
+     * Prints the seat on the terminal based on it's booked status
+     * @param seatVal the seat that is to be checked
+     */
     static void printSeat(int seatVal) {
         if (seatVal == 0) {
             System.out.print("O");
@@ -89,6 +95,11 @@ public class Theatre {
         }
     }
 
+    /**
+     * @param message the message that is asked from the user to enter an int
+     * @param tryAgainMessage the message that is shown to the user when they enter a wrong input
+     * @return the int input by the user
+     */
     static int getPositiveInt(String message, String tryAgainMessage) {
         System.out.println(message);
         Scanner sc = new Scanner(System.in);
@@ -113,10 +124,9 @@ public class Theatre {
     }
 
     /**
-     *
-     * @param message
-     * @param tryAgainMessage
-     * @return
+     * @param message the message that is asked from the user to enter a float
+     * @param tryAgainMessage the message that is shown to the user when they enter a wrong input
+     * @return the float input by the user
      */
     static float getPositiveFloat(String message, String tryAgainMessage) {
         System.out.println(message);
@@ -140,6 +150,7 @@ public class Theatre {
 
         while (true);
     }
+
     static void available_seats() {
         System.out.print("Seats available in row 1: ");
 
@@ -172,7 +183,8 @@ public class Theatre {
 
     /**
      * will take an ArrayList of type integer
-     * @param list is the ArrayList
+     *
+     * @param list the ArrayList
      * @return a formatted string with the array elements
      */
     static String arrayToString(ArrayList<Integer> list) {
@@ -186,6 +198,11 @@ public class Theatre {
         return retStr.toString();
     }
 
+    /**
+     * will take an ArrayList of type integer
+     * @param list the integer array
+     * @return a formatted string with the array elements
+     */
     static String arrayToString(int[] list) {
         StringBuilder retStr = new StringBuilder();
         for (int i = 0; i < list.length; i++) {
@@ -218,7 +235,7 @@ public class Theatre {
         }
     }
 
-    static void sort_tickets() {
+    /*static void sort_tickets() {
         for (int i = 0; i < tickets.size(); i++) {
             for (int j = i + 1; j < tickets.size(); j++) {
                 if (tickets.get(i).getPrice() > tickets.get(j).getPrice()) {
@@ -229,8 +246,35 @@ public class Theatre {
             }
         }
         show_tickets_info();
+    }*/
+
+    static void sort_tickets() {
+        ArrayList<Ticket> tempArray = new ArrayList<>();
+        ArrayList<Ticket> copiedArray = new ArrayList<>(tickets);
+//        Ticket currentSmallest = copiedArray.get(0);
+
+        while (copiedArray.size() != 0) {
+            int smallestNumberIndex = 0;
+            for (int i = 0; i < copiedArray.size(); i++) {
+                if (copiedArray.get(i).getPrice() <= copiedArray.get(smallestNumberIndex).getPrice()) {
+                    smallestNumberIndex = i;
+                }
+            }
+            tempArray.add(copiedArray.get(smallestNumberIndex));
+            copiedArray.remove(smallestNumberIndex);
+        }
+
+        tickets = tempArray;
+        show_tickets_info();
     }
 
+    /**
+     * Get the index of the ticket by searching tickets with row number and seat number
+     * @param row the row number
+     * @param seat the seat number
+     * @param ticketArray the array of tickets that needs to be searched
+     * @return index of the ticket
+     */
     static int getTicketIndex(int row, int seat, ArrayList<Ticket> ticketArray) {
         for (int i = 0; i < ticketArray.size(); i++) {
             if (ticketArray.get(i).getRow() == row && ticketArray.get(i).getSeat() == seat) {
@@ -241,6 +285,10 @@ public class Theatre {
         return -1;
     }
 
+    /**
+     * get email from the user
+     * @return the email entered by the user
+     */
     static String emailInput() {
         Scanner sc = new Scanner(System.in);
         String email = "";
@@ -254,25 +302,27 @@ public class Theatre {
         return email;
     }
 
+    /**
+     * check whether the email is in the correct format
+     * @param email email needs to be checked
+     * @return true if the format is correct and vice versa
+     */
     static boolean emailFormatCheck(String email) {
         if (email.contains("@")) {
             try {
                 if (email.split("@")[1].split("\\.").length == 2) {
                     return true;
-                }
-                else {
+                } else {
                     return false;
                 }
-            }
-            catch (ArrayIndexOutOfBoundsException e) {
+            } catch (ArrayIndexOutOfBoundsException e) {
                 return false;
             }
-        }
-
-        else {
+        } else {
             return false;
         }
     }
+
     static void save() {
         File file = new File("src\\data.txt");
 
@@ -301,6 +351,11 @@ public class Theatre {
 
     }
 
+    /**
+     * Converts an array of strings to an array of integers
+     * @param array the array that is needed to be converted
+     * @return the integer array
+     */
     static int[] strArrayToIntArray(String[] array) {
         int[] tempArray = new int[array.length];
         for (int i = 0; i < array.length; i++) {
@@ -309,6 +364,12 @@ public class Theatre {
         return tempArray;
     }
 
+    /**
+     * Checks the length of the given array is equal to the given seat row
+     * @param array the array that needs to be checked
+     * @param row
+     * @return true if the array is equal to the given seat row and vice versa
+     */
     static boolean rowLengthCheck(int[] array, int row) {
         return switch (row) {
             case 1 -> array.length == 12;
@@ -322,7 +383,7 @@ public class Theatre {
         File arrayFile = new File("src/data.txt");
 
         try {
-            Scanner reader = new Scanner(arrayFile);
+            Scanner reader =   new Scanner(arrayFile);
 
             String row1DataStr = reader.nextLine().split(" - ")[1];
             int[] rowTemp = strArrayToIntArray(row1DataStr.split(", "));
@@ -358,6 +419,12 @@ public class Theatre {
 
     }
 
+    /**
+     * Gets a positive integer from the user
+     * @param message shows a message before getting the input
+     * @param includesZero true: user can input numbers from 0, false: user can only input numbers from 1
+     * @return the valid number inputted by the user
+     */
     static int getPositiveInt(String message, boolean includesZero) {
         Scanner sc = new Scanner(System.in);
 
@@ -390,7 +457,7 @@ public class Theatre {
     }
 
     static void show_tickets_info() {
-        int i = 0;
+        float i = 0;
 
         for (Ticket ticket : tickets) {
             ticket.print();
@@ -401,6 +468,10 @@ public class Theatre {
         System.out.println("Total value of the tickets: " + i);
     }
 
+    /**
+     * Get the seat row from the user
+     * @return the seat row
+     */
     static int getSeatRow() {
 
         while (true) {
@@ -416,6 +487,13 @@ public class Theatre {
 
     }
 
+    /**
+     * Get a valid seat number from a user
+     * @param selectedSeatRow is used to check the valid seat range
+     * @param mode BOOKING_MODE will check whether the seat is already booked and
+     *             CANCELLING_MODE will check whether a seat is already empty
+     * @return the seat number
+     */
     static int getSeat(int selectedSeatRow, boolean mode) {
 
         while (true) {
@@ -486,15 +564,30 @@ public class Theatre {
         }
     }
 
+    /**
+     * Gets a non-empty string from the user
+     * @param message prints this message before getting the input
+     * @return the user input
+     */
+    static String getString(String message) {
+        System.out.println(message);
+        Scanner sc = new Scanner(System.in);
+        String str = sc.nextLine();
+
+        while (str.equals("")) {
+            System.out.println("Please enter a valid string");
+            str = sc.nextLine();
+        }
+
+        return str;
+    }
+
     static void buy_ticket() {
         int selectedSeatRow = getSeatRow();
         int selectedSeat = getSeat(selectedSeatRow, BOOKING_MODE);
 
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Please enter the name of the person");
-        String personName = sc.nextLine();
-        System.out.println("Please enter the surname of the person");
-        String surname = sc.nextLine();
+        String personName = getString("Please enter the name of the person");
+        String surname = getString("Please enter the surname of the person");
         System.out.println("Please enter the email of the person");
         String email = emailInput();
 
