@@ -33,7 +33,7 @@ public class Theatre {
                         0) Quit\s
                     -------------------------------------------------
                     """);
-            switch (getPositiveInt("Enter option:", "Invalid option. Please try again", true)) {
+            switch (getPositiveInt("Enter option:", "Invalid input. Please enter an integer from 0 - 8", true)) {
                 case 1 -> buy_ticket();
                 case 0 -> flag = false;
                 case 2 -> print_seating_area();
@@ -219,7 +219,13 @@ public class Theatre {
 
     static void cancel_ticket() {
         int seatRow = getSeatRow();
+        if (seatRow == 0) {
+            return;
+        }
         int seat = getSeat(seatRow, CANCELLING_MODE);
+        if (seat == 0) {
+            return;
+        }
         int[] rowArray;
         if (seat != -1) {
             rowArray = switch (seatRow) {
@@ -233,7 +239,7 @@ public class Theatre {
             if (ticketIndex != -1) {
                 tickets.remove(ticketIndex);
             }
-            System.out.printf("Cancelled ticket %s from row %s\n", seat, seatRow);
+            System.out.printf("Cancelled seat %s from row %s\n", seat, seatRow);
         }
     }
 
@@ -284,6 +290,9 @@ public class Theatre {
                 System.out.println("Email is in wrong format. Please try again.");
             }
             email = sc.nextLine();
+            if (email.equals("")){
+                System.out.println("Email is in wrong format. Please try again.");
+            }
         }
         while (!emailFormatCheck(email));
         return email;
@@ -307,7 +316,7 @@ public class Theatre {
     }
 
     static void save() {
-        File file = new File("src\\data.txt");
+        File file = new File("data.txt");
 
         try {
             if (file.createNewFile()) {
@@ -363,7 +372,7 @@ public class Theatre {
     }
 
     static void load() {
-        File arrayFile = new File("src/data.txt");
+        File arrayFile = new File("data.txt");
 
         try {
             Scanner reader =   new Scanner(arrayFile);
@@ -397,7 +406,7 @@ public class Theatre {
             System.out.println("Successfully loaded the file");
             reader.close();
         } catch (FileNotFoundException e) {
-            System.out.println("Invalid file. Failed to load.");
+            System.out.println("Error occurred. File failed to load");
         }
 
     }
@@ -409,7 +418,7 @@ public class Theatre {
             System.out.println();
             i += ticket.getPrice();
         }
-        System.out.println("Total value of the tickets: " + i);
+        System.out.println("Total income from the tickets: " + i);
     }
 
     /**
@@ -418,10 +427,10 @@ public class Theatre {
      */
     static int getSeatRow() {
         while (true) {
-            int tempSeat = getPositiveInt("Please Enter the seat row", "Please enter a positive integer", false);
+            int tempSeat = getPositiveInt("Please Enter the seat row. Enter 0 to exit to the main menu.", "Please enter a positive integer", true);
 
             switch (tempSeat) {
-                case 1, 2, 3 -> {
+                case 1, 2, 3, 0 -> {
                     return tempSeat;
                 }
                 default -> System.out.println("Invalid seat row. Please try again.");
@@ -446,6 +455,7 @@ public class Theatre {
                     return seat;
                 } else {
                     System.out.println("Seat already booked");
+                    return -1;
                 }
             } else {
                 if (row[seat - 1] == 0) {
@@ -470,12 +480,16 @@ public class Theatre {
         int seatNumber = -1;
 
         while (seatNumber == -1) {
-            int tempSeat = getPositiveInt("Please enter a seat", "Please enter a positive integer", false);
-
-            switch (selectedSeatRow) {
-                case 1 -> seatNumber = seatAvailabilityChecker(row1, tempSeat, mode);
-                case 2 -> seatNumber = seatAvailabilityChecker(row2, tempSeat, mode);
-                case 3 -> seatNumber = seatAvailabilityChecker(row3, tempSeat, mode);
+            int tempSeat = getPositiveInt("Please enter a seat. Enter 0 to exit to the main menu.", "Please enter a positive integer", true);
+            if (tempSeat == 0) {
+                seatNumber = 0;
+            }
+            else {
+                switch (selectedSeatRow) {
+                    case 1 -> seatNumber = seatAvailabilityChecker(row1, tempSeat, mode);
+                    case 2 -> seatNumber = seatAvailabilityChecker(row2, tempSeat, mode);
+                    case 3 -> seatNumber = seatAvailabilityChecker(row3, tempSeat, mode);
+                }
             }
         }
 
@@ -502,7 +516,13 @@ public class Theatre {
 
     static void buy_ticket() {
         int selectedSeatRow = getSeatRow();
+        if (selectedSeatRow == 0) {
+            return;
+        }
         int selectedSeat = getSeat(selectedSeatRow, BOOKING_MODE);
+        if (selectedSeat == 0) {
+            return;
+        }
 
         String personName = getString("Please enter the name of the person");
         String surname = getString("Please enter the surname of the person");
